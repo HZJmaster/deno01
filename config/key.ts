@@ -1,1 +1,3 @@
-export const apiKey = "245ecfc77272f060ba74f70aac2cb805";
+import { generateKey } from "./generateKey.js";
+
+export const apiKey = generateKey().key;
