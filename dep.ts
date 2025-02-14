@@ -1,3 +1,4 @@
+const env = Deno.env.get("ENV_DENO");
 export {
   Application,
   Router,
@@ -6,5 +7,12 @@ export {
 } from "https://deno.land/x/oak@v17.1.4/mod.ts";
 export { jsonMiddleware } from "./middlewares/json_middleware.ts";
 export { sendRequest } from "./utils/httpService.ts";
-export const kv = await Deno.openKv();
-// "https://api.deno.com/databases/32f7e8ff-39e5-46ad-ad81-599d639e2fe8/connect"
+let kvTemp;
+if (env === "production") {
+  kvTemp = await Deno.openKv();
+} else {
+  kvTemp = await Deno.openKv(
+    "https://api.deno.com/databases/dca20192-cb7b-481c-bd13-8a428a24f047/connect"
+  );
+}
+export const kv = kvTemp;

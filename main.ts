@@ -16,5 +16,4 @@ app.use(videoRouter.allowedMethods());
 cron("0 1 * * *", async () => {
   await parserAnimateWebsizte();
 });
-await parserAnimateWebsizte();
 await app.listen({ port: 8000 });
