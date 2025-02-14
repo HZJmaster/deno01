@@ -13,7 +13,8 @@ app.use(userRouter.allowedMethods());
 
 app.use(videoRouter.routes());
 app.use(videoRouter.allowedMethods());
-cron("0 1 * * *", async () => {
+cron("0 0 1 * * *", async () => {
+  console.log("This runs at 1:00 AM every day");
   await parserAnimateWebsizte();
 });
 await app.listen({ port: 8000 });
