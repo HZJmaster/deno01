@@ -1,5 +1,5 @@
 import { apiKey } from "../config/key.ts";
-import { Router, sendRequest } from "../dep.ts";
+import { Router, sendRequest, kv } from "../dep.ts";
 
 const router = new Router();
 
@@ -30,6 +30,29 @@ router.get("/video/search_prompt", async (context) => {
     }
   } else {
     context.response.body = { message: "No key parameter provided" };
+  }
+});
+
+router.get("/video/list", async (context) => {
+  const entries = kv.list({ prefix: ["todayVideo"] });
+  const resultArray = [];
+  for await (const entry of entries) {
+    resultArray.push({ type: entry.key[1], data: entry.value });
+  }
+  context.response.body = resultArray;
+});
+
+router.get("/video/type", async (context) => {
+  const type = context.request.url.searchParams.get("type");
+  if (type) {
+    const data = await kv.get(["todayVideo", type]);
+    context.response.body = {
+      data: data.value,
+    };
+  } else {
+    context.response.body = {
+      msg: "type不存在",
+    };
   }
 });
 

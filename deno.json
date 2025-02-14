@@ -2,13 +2,5 @@
   "tasks": {
     "dev": "deno run --allow-net --watch main.ts"
   },
-  "imports": {},
-  "deploy": {
-    "project": "d5b98c6c-330f-4238-8e23-8d3dbf5bc072",
-    "exclude": [
-      "**/node_modules"
-    ],
-    "include": [],
-    "entrypoint": "main.ts"
-  }
+  "imports": {}
 }
