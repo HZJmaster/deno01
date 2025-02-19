@@ -7,6 +7,8 @@ export {
 } from "https://deno.land/x/oak@v17.1.4/mod.ts";
 export { jsonMiddleware } from "./middlewares/json_middleware.ts";
 export { sendRequest } from "./utils/httpService.ts";
+export { ResponseHandler } from "./utils/responseHandler.ts";
+export { generateToken } from "./utils/jwtTool.ts";
 let kvTemp;
 if (env === "production") {
   kvTemp = await Deno.openKv();

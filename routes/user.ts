@@ -1,4 +1,4 @@
-import { Router, kv } from "../dep.ts";
+import { Router, kv, ResponseHandler, generateToken } from "../dep.ts";
 import { ulid } from "jsr:@std/ulid";
 import { userType } from "../types/userType.ts";
 
@@ -12,39 +12,35 @@ router.post("/users/register", async (ctx) => {
   const user = await kv.get(["users", obj.username + ""]);
   if (user.value) {
     ctx.response.status = 400;
-    ctx.response.body = { message: "User already exists" };
+    ctx.response.body = ResponseHandler.failRes("用户已存在");
     return;
   }
 
   // 创建用户
   await kv.set(["users", obj.username + ""], {
     userId: ulid(),
+    userName: obj.username + "",
     password: obj.password + "",
   });
 
   ctx.response.status = 201;
-  ctx.response.body = { message: "User registered successfully" };
+  ctx.response.body = ResponseHandler.successRes(null, "注册成功");
 });
 
 router.post("/users/login", async (ctx) => {
   const obj = await ctx.request.body.json();
 
-  // 检查用户是否存在
   const user = await kv.get<userType>(["users", obj.username + ""]);
   if (!user.value || user.value.password !== obj.password + "") {
     ctx.response.status = 400;
-    ctx.response.body = { message: "Invalid username or password" };
+    ctx.response.body = ResponseHandler.failRes("无效的用户名和密码");
     return;
   }
   user.value.password = "******";
-  await kv.set(["sessions", user.value.userId], user.value, {
-    expireIn: 3600 * 1000,
-  });
+  const token = await generateToken(obj.username + "");
+  user.value.token = token;
   ctx.response.status = 201;
-  ctx.response.body = {
-    data: user.value,
-    message: "User registered successfully",
-  };
+  ctx.response.body = ResponseHandler.successRes(user.value, "登录成功");
 });
 
 export default router;
