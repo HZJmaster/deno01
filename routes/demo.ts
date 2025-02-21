@@ -1,4 +1,4 @@
-import { Router, sendRequest } from "../dep.ts";
+import { Router } from "../dep.ts";
 import { $o, $d } from "../config/key.ts";
 
 const router = new Router();
@@ -33,18 +33,4 @@ router.get("/demo", async (ctx) => {
   }
 });
 
-router.post("/demo", async (ctx) => {
-  try {
-    const response = await fetch(
-      "https://s1.cloud.nnpp.vip:2223/nY7v3/i/d/WgVISX.1.webp"
-    );
-    console.log(response);
-    ctx.response.body = {
-      data: response.text(),
-    };
-  } catch {
-    ctx.response.status = 500;
-    ctx.response.body = { message: "Failed to get data" };
-  }
-});
 export default router;
