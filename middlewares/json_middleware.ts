@@ -6,8 +6,6 @@ export const jsonMiddleware: Middleware = async (
 ) => {
   await next(); // 先执行后续的中间件或路由处理器
 
-  console.log(ctx.response.headers.get("Content-Type"));
-
   // 如果响应体是对象或数组，则将其序列化为 JSON
   if (
     typeof ctx.response.body === "object" &&
