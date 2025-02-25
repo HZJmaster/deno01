@@ -33,29 +33,6 @@ router.get("/video/search_prompt", async (ctx) => {
   }
 });
 
-router.get("/video/list", async (ctx) => {
-  const entries = kv.list({ prefix: ["todayVideo"] });
-  const resultArray = [];
-  for await (const entry of entries) {
-    resultArray.push({ type: entry.key[1], data: entry.value });
-  }
-  ctx.response.body = resultArray;
-});
-
-router.get("/video/type", async (ctx) => {
-  const type = ctx.request.url.searchParams.get("type");
-  if (type) {
-    const data = await kv.get(["todayVideo", type]);
-    ctx.response.body = {
-      data: data.value,
-    };
-  } else {
-    ctx.response.body = {
-      msg: "type不存在",
-    };
-  }
-});
-
 router.post("/video/search", async (ctx) => {
   try {
     const body = ctx.request.body;
