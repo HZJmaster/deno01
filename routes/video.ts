@@ -1,5 +1,5 @@
 import { apiKey } from "../config/key.ts";
-import { Router, sendRequest, kv } from "../dep.ts";
+import { Router, sendRequest } from "../dep.ts";
 
 const router = new Router();
 
@@ -30,6 +30,29 @@ router.get("/video/search_prompt", async (ctx) => {
     }
   } else {
     ctx.response.body = { message: "No key parameter provided" };
+  }
+});
+
+router.get("/video/imgload", async (ctx) => {
+  const queryParams = ctx.request.url.searchParams;
+  const imgUrl = queryParams.get("url");
+  try {
+    if (!imgUrl) {
+      throw new Error();
+    }
+    const response = await fetch(imgUrl, {
+      method: "GET",
+      headers: {
+        Referer: "https://mei.vving.vip/",
+      },
+    });
+    const contentType = response.headers.get("content-type") || "image/webp";
+    ctx.response.headers.set("content-type", contentType);
+    const body = await response.arrayBuffer();
+    ctx.response.body = new Uint8Array(body);
+  } catch {
+    ctx.response.status = 500;
+    ctx.response.body = { message: "Failed to get data" };
   }
 });
 
