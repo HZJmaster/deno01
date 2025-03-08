@@ -40,4 +40,8 @@ router.get("/expire/id", async (ctx) => {
   ctx.response.body = ResponseHandler.successRes(null, "查询失败");
 });
 
+router.get("/test", async () => {
+  await kv.delete(["todayVideo"]);
+});
+
 export default router;
