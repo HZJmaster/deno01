@@ -8,7 +8,6 @@ router.post("/expire/name", async (ctx) => {
   const obj = await ctx.request.body.json();
   const user = await kv.get<userType>(["users", obj.username + ""]);
   if (!user.value) {
-    ctx.response.status = 500;
     ctx.response.body = ResponseHandler.successRes(obj.username, "用户不存在");
     return;
   }
@@ -38,7 +37,6 @@ router.get("/expire/id", async (ctx) => {
     return;
   }
   await kv.delete(["sessions", id + ""]);
-  ctx.response.status = 500;
   ctx.response.body = ResponseHandler.successRes(null, "查询失败");
 });
 

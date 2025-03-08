@@ -11,7 +11,6 @@ router.post("/users/register", async (ctx) => {
   // 检查用户是否已存在
   const user = await kv.get(["users", obj.username + ""]);
   if (user.value) {
-    ctx.response.status = 400;
     ctx.response.body = ResponseHandler.failRes("用户已存在");
     return;
   }
@@ -32,7 +31,6 @@ router.post("/users/login", async (ctx) => {
 
   const user = await kv.get<userType>(["users", obj.username + ""]);
   if (!user.value || user.value.password !== obj.password + "") {
-    ctx.response.status = 400;
     ctx.response.body = ResponseHandler.failRes("无效的用户名和密码");
     return;
   }
@@ -41,6 +39,26 @@ router.post("/users/login", async (ctx) => {
   user.value.token = token;
   ctx.response.status = 201;
   ctx.response.body = ResponseHandler.successRes(user.value, "登录成功");
+});
+
+router.post("/users/resetps", async (ctx) => {
+  const obj = await ctx.request.body.json();
+
+  const user = await kv.get<userType>(["users", obj.username + ""]);
+  if (!user.value || user.value.password !== obj.password + "") {
+    ctx.response.body = ResponseHandler.failRes("无效的用户名和密码");
+    return;
+  }
+  if (obj.password !== user.value.password) {
+    ctx.response.body = ResponseHandler.failRes("无效的旧密码");
+    return;
+  }
+  await kv.set(["users", obj.username + ""], {
+    ...user.value,
+    password: obj.newPassword,
+  });
+  ctx.response.status = 201;
+  ctx.response.body = ResponseHandler.successRes(null, "更新成功");
 });
 
 export default router;
