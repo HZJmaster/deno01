@@ -20,6 +20,7 @@ router.post("/users/register", async (ctx) => {
     userId: ulid(),
     userName: obj.username + "",
     password: obj.password + "",
+    deviceId: obj.deviceId + "",
   });
 
   ctx.response.status = 201;
@@ -34,6 +35,11 @@ router.post("/users/login", async (ctx) => {
     ctx.response.body = ResponseHandler.failRes("无效的用户名和密码");
     return;
   }
+  if (user.value.deviceId !== obj.deviceId + "") {
+    ctx.response.body = ResponseHandler.failRes("账户与绑定设备不同");
+    return;
+  }
+
   user.value.password = "******";
   const token = await generateToken(obj.username + "");
   user.value.token = token;
@@ -49,8 +55,12 @@ router.post("/users/resetps", async (ctx) => {
     ctx.response.body = ResponseHandler.failRes("无效的用户名和密码");
     return;
   }
-  if (obj.password !== user.value.password) {
+  if (user.value.password !== obj.password) {
     ctx.response.body = ResponseHandler.failRes("无效的旧密码");
+    return;
+  }
+  if (user.value.deviceId !== obj.deviceId + "") {
+    ctx.response.body = ResponseHandler.failRes("账户与绑定设备不同");
     return;
   }
   await kv.set(["users", obj.username + ""], {
