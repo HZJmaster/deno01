@@ -167,7 +167,7 @@ router.get("/video/yhsource", async (ctx) => {
       url.searchParams.append("dect", "");
       url.searchParams.append("id", "");
       const response = await sendRequest<string>(url);
-      ctx.response.body = JSON.parse(response);
+      console.log(response);
     } catch {
       ctx.response.status = 500;
       ctx.response.body = { message: "Failed to get data" };
