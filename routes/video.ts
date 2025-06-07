@@ -1,6 +1,7 @@
 import { apiKey } from "../config/key.ts";
 import { $o, $d } from "../config/key.ts";
 import { Router, sendRequest, kv } from "../dep.ts";
+import { extractMediaInfo } from "../utils/parseHtml.ts";
 
 const router = new Router();
 
@@ -167,7 +168,7 @@ router.get("/video/yhsource", async (ctx) => {
       url.searchParams.append("dect", "");
       url.searchParams.append("id", "");
       const response = await sendRequest<string>(url);
-      console.log(response);
+      ctx.response.body = extractMediaInfo(response);
     } catch {
       ctx.response.status = 500;
       ctx.response.body = { message: "Failed to get data" };
