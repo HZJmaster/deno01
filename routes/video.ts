@@ -141,4 +141,40 @@ router.get("/video/yhsearch", async (ctx) => {
   }
 });
 
+router.get("/video/yhsource", async (ctx) => {
+  const queryParams = ctx.request.url.searchParams;
+  const page = queryParams.get("page") || "1";
+  const action = queryParams.get("action");
+  const year = queryParams.get("year") || "0";
+  const area = queryParams.get("area") || "all";
+  const sclass = queryParams.get("class") || "0";
+  const sourceApi = await kv.get<{ sourceApi: string }>([
+    "system",
+    "sourceApi",
+  ]);
+  if (action) {
+    try {
+      const url = new URL(
+        sourceApi.value
+          ? sourceApi.value.sourceApi
+          : "http://175.178.165.73:32517/getsortdata_all_z.php"
+      );
+      url.searchParams.append("action", action);
+      url.searchParams.append("page", page);
+      url.searchParams.append("year", year);
+      url.searchParams.append("area", area);
+      url.searchParams.append("class", sclass);
+      url.searchParams.append("dect", "");
+      url.searchParams.append("id", "");
+      const response = await sendRequest<string>(url);
+      ctx.response.body = JSON.parse(response);
+    } catch {
+      ctx.response.status = 500;
+      ctx.response.body = { message: "Failed to get data" };
+    }
+  } else {
+    ctx.response.body = { message: "No key parameter provided" };
+  }
+});
+
 export default router;
