@@ -35,6 +35,17 @@ router.post("/system/searchApi", async (ctx) => {
   ctx.response.body = ResponseHandler.successRes(null, "搜索地址更新成功");
 });
 
+router.post("/system/resultApi", async (ctx) => {
+  const obj = await ctx.request.body.json();
+
+  await kv.set(["system", "resultApi"], {
+    resultApi: obj.resultApi,
+  });
+
+  ctx.response.status = 201;
+  ctx.response.body = ResponseHandler.successRes(null, "片源地址更新成功");
+});
+
 router.get("/system/status", async (ctx) => {
   const data = await kv.get(["system", "status"]);
   ctx.response.status = 201;
