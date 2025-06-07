@@ -110,26 +110,34 @@ router.get("/video/source", async (ctx) => {
 });
 
 router.get("/video/yhsearch", async (ctx) => {
-  const searchApi = await kv.get(["system", "searchApi"]);
-  console.log(searchApi);
-  try {
-    const url = new URL("http://159.75.138.91:47124/ssszz.php");
-    url.searchParams.append("top", "10");
-    url.searchParams.append("q", "藏海");
-    url.searchParams.append(
-      "other_kkk217",
-      "%2568%2574%2574%2570%253a%252f%252f%2579%2568%2564%256d%2537%2536%252e%2563%256f%256d"
-    );
-    url.searchParams.append("dect", "0");
-    fetch(
-      "http://175.178.165.73:32517/getsortdata_all_z.php?action=acg&page=1&year=0&area=all&class=0&dect=&id="
-    )
-      .then((response) => response.text())
-      .then((data) => console.log(data))
-      .catch((error) => console.error("Error:", error));
-  } catch {
-    ctx.response.status = 500;
-    ctx.response.body = { message: "Failed to get data" };
+  const queryParams = ctx.request.url.searchParams;
+  const keyword = queryParams.get("keyword");
+  const searchApi = await kv.get<{ searchApi: string }>([
+    "system",
+    "searchApi",
+  ]);
+  if (keyword) {
+    try {
+      const url = new URL(
+        searchApi.value
+          ? searchApi.value.searchApi
+          : "http://159.75.138.91:47124/ssszz.php"
+      );
+      url.searchParams.append("top", "20");
+      url.searchParams.append("q", keyword);
+      url.searchParams.append(
+        "other_kkk217",
+        "%2568%2574%2574%2570%253a%252f%252f%2579%2568%2564%256d%2537%2536%252e%2563%256f%256d"
+      );
+      url.searchParams.append("dect", "0");
+      const response = await sendRequest<string>(url);
+      ctx.response.body = JSON.parse(response);
+    } catch {
+      ctx.response.status = 500;
+      ctx.response.body = { message: "Failed to get data" };
+    }
+  } else {
+    ctx.response.body = { message: "No key parameter provided" };
   }
 });
 
