@@ -6,7 +6,7 @@ export interface RequestOptions {
 }
 
 export async function sendRequest<T>(
-  url: string,
+  url: string | URL,
   options?: RequestOptions
 ): Promise<T> {
   const defaultOptions: RequestOptions = {

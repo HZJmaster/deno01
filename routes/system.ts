@@ -17,7 +17,7 @@ router.post("/system/sourceApi", async (ctx) => {
   const obj = await ctx.request.body.json();
 
   await kv.set(["system", "sourceApi"], {
-    status: obj.sourceApi,
+    sourceApi: obj.sourceApi,
   });
 
   ctx.response.status = 201;
@@ -28,7 +28,7 @@ router.post("/system/searchApi", async (ctx) => {
   const obj = await ctx.request.body.json();
 
   await kv.set(["system", "searchApi"], {
-    status: obj.searchApi,
+    searchApi: obj.searchApi,
   });
 
   ctx.response.status = 201;
