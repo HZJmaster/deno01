@@ -1,6 +1,7 @@
 import { apiKey } from "../config/key.ts";
-import { $o, $d } from "../config/key.ts";
-import { Router, sendRequest, kv } from "../dep.ts";
+import { $d, $o } from "../config/key.ts";
+import { kv, Router, sendRequest } from "../dep.ts";
+import { extractPlaylists } from "../utils/executeJS.ts";
 import { extractMediaInfo } from "../utils/parseHtml.ts";
 
 const router = new Router();
@@ -169,6 +170,31 @@ router.get("/video/yhsource", async (ctx) => {
       url.searchParams.append("id", "");
       const response = await sendRequest<string>(url);
       ctx.response.body = extractMediaInfo(response);
+    } catch {
+      ctx.response.status = 500;
+      ctx.response.body = { message: "Failed to get data" };
+    }
+  } else {
+    ctx.response.body = { message: "No key parameter provided" };
+  }
+});
+
+router.get("/video/yhresult", async (ctx) => {
+  const queryParams = ctx.request.url.searchParams;
+  const id = queryParams.get("id");
+  const resultApi = await kv.get<{ resultApi: string }>([
+    "system",
+    "resultApi",
+  ]);
+  if (id) {
+    try {
+      const url = new URL(
+        resultApi.value
+          ? `${resultApi.value.resultApi}/ne2/s${id}.js?${Date.now()}`
+          : `http://v.58hda.com:8077/ne2/s${id}.js?${Date.now()}`
+      );
+      const jsCode = await sendRequest<string>(url);
+      ctx.response.body = extractPlaylists(jsCode);
     } catch {
       ctx.response.status = 500;
       ctx.response.body = { message: "Failed to get data" };
