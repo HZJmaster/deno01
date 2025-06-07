@@ -20,23 +20,23 @@ export function extractMediaInfo(html: string) {
       "未知标题";
 
     // 提取链接
-    const link = anchor.getAttribute("href") || "#";
+    const url = anchor.getAttribute("href") || "#";
 
     // 提取图片URL（优先使用src属性）
     const img = anchor.querySelector("img.lazy");
-    const image =
+    const thumb =
       img?.getAttribute("src") || img?.getAttribute("data-original") || "";
 
     // 提取最新集数
     const episodeText = anchor.querySelector("p.bz")?.textContent.trim() || "";
-    const latestEpisode = parseInt(episodeText.replace(/[^\d]/g, "")) || 0;
+    const lianzaijs = parseInt(episodeText.replace(/[^\d]/g, "")) || 0;
 
     items.push({
       title,
-      link,
-      image,
+      url,
+      thumb,
       episodeText,
-      latestEpisode,
+      lianzaijs,
     });
   }
 
